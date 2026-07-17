@@ -1,0 +1,12 @@
+```
+Detect repeated authentication failures and enrich the result.
+```
+index=security sourcetype=linux_secure earliest=-24h@h
+("Failed password" OR "authentication failure") NOT host=dev*
+| rex field=_raw "user[=: ]+(?<user>[^ ]+)"
+| eval normalized_user=lower(coalesce(user, "unknown"))
+| stats count AS failures, dc(src_ip) AS source_count, values(src_ip) AS sources BY normalized_user, host
+| where failures >= 5 AND source_count > 1
+| lookup privileged_users user AS normalized_user OUTPUTNEW owner, team
+| sort - failures
+| table normalized_user, host, failures, source_count, sources, owner, team

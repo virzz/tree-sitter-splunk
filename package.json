@@ -1,0 +1,41 @@
+{
+  "name": "tree-sitter-splunk",
+  "version": "0.1.0",
+  "description": "Tree-sitter grammar for Splunk Search Processing Language (SPL).",
+  "main": "grammar.js",
+  "scripts": {
+    "generate": "tree-sitter generate",
+    "test": "tree-sitter test",
+    "parse:example": "tree-sitter parse examples/security.spl",
+    "check": "bun run generate && bun run test && bun run parse:example >/dev/null"
+  },
+  "keywords": [
+    "tree-sitter",
+    "splunk",
+    "spl"
+  ],
+  "author": "Mozhu <mozhu233@outlook.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/virzz/tree-sitter-splunk.git"
+  },
+  "bugs": {
+    "url": "https://github.com/virzz/tree-sitter-splunk/issues"
+  },
+  "homepage": "https://github.com/virzz/tree-sitter-splunk#readme",
+  "devDependencies": {
+    "tree-sitter-cli": "0.25.10"
+  },
+  "tree-sitter": [
+    {
+      "scope": "source.splunk",
+      "file-types": [
+        "spl",
+        "splunk",
+        "splunk-spl"
+      ],
+      "injection-regex": "^(splunk|spl)$"
+    }
+  ]
+}

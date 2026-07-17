@@ -1,0 +1,30 @@
+{
+  "grammars": [
+    {
+      "name": "splunk",
+      "camelcase": "Splunk",
+      "scope": "source.splunk",
+      "path": ".",
+      "file-types": [
+        "spl",
+        "splunk",
+        "splunk-spl"
+      ],
+      "injection-regex": "^(splunk|spl)$"
+    }
+  ],
+  "metadata": {
+    "version": "0.1.0",
+    "license": "MIT",
+    "description": "Tree-sitter grammar for Splunk Search Processing Language (SPL).",
+    "authors": [
+      {
+        "name": "Mozhu",
+        "email": "mozhu233@outlook.com"
+      }
+    ],
+    "links": {
+      "repository": "https://github.com/virzz/tree-sitter-splunk"
+    }
+  }
+}

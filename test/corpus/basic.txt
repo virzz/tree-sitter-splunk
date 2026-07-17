@@ -1,0 +1,233 @@
+==================
+search pipeline
+==================
+
+index=security sourcetype=linux_secure earliest=-24h@h
+("Failed password" OR "authentication failure") NOT host=dev*
+| rex field=_raw "user[=: ]+(?<user>[^ ]+)"
+| eval normalized_user=lower(coalesce(user, "unknown"))
+| stats count AS failures, dc(src_ip) AS source_count BY normalized_user, host
+| where failures >= 5 AND source_count > 1
+| sort - failures
+
+---
+
+(source_file
+  (pipeline
+    (search_stage
+      (binary_expression
+        (identifier)
+        (identifier))
+      (binary_expression
+        (identifier)
+        (identifier))
+      (binary_expression
+        (identifier)
+        (relative_time))
+      (parenthesized_expression
+        (binary_expression
+          (string
+            (string_content))
+          (operator)
+          (string
+            (string_content))))
+      (binary_expression
+        (unary_expression
+          (operator)
+          (identifier))
+        (wildcard_pattern)))
+    (pipe_stage
+      (command
+        (command_name)
+        (binary_expression
+          (identifier)
+          (identifier))
+        (string
+          (string_content))))
+    (pipe_stage
+      (command
+        (command_name)
+        (binary_expression
+          (identifier)
+          (function_call
+            (identifier)
+            (function_call
+              (identifier)
+              (identifier)
+              (string
+                (string_content)))))))
+    (pipe_stage
+      (command
+        (command_name)
+        (identifier)
+        (clause_keyword)
+        (identifier)
+        (function_call
+          (identifier)
+          (identifier))
+        (clause_keyword)
+        (identifier)
+        (clause_keyword)
+        (identifier)
+        (identifier)))
+    (pipe_stage
+      (command
+        (command_name)
+        (binary_expression
+          (binary_expression
+            (identifier)
+            (number))
+          (operator)
+          (binary_expression
+            (identifier)
+            (number)))))
+    (pipe_stage
+      (command
+        (command_name)
+        (unary_expression
+          (identifier))))))
+
+==================
+subsearch and macros
+==================
+
+`security_indexes` eventtype::authentication
+| append [ search index=identity action=failure | stats count BY user ]
+| lookup privileged_users user OUTPUTNEW owner
+| eval label="$user$:" . owner
+
+---
+
+(source_file
+  (pipeline
+    (search_stage
+      (macro_call
+        (macro_name))
+      (field_value_expression
+        (identifier)
+        (identifier)))
+    (pipe_stage
+      (command
+        (command_name)
+        (subsearch
+          (pipeline
+            (search_stage
+              (search_keyword)
+              (binary_expression
+                (identifier)
+                (identifier))
+              (binary_expression
+                (identifier)
+                (identifier)))
+            (pipe_stage
+              (command
+                (command_name)
+                (identifier)
+                (clause_keyword)
+                (identifier)))))))
+    (pipe_stage
+      (command
+        (command_name)
+        (identifier)
+        (identifier)
+        (clause_keyword)
+        (identifier)))
+    (pipe_stage
+      (command
+        (command_name)
+        (binary_expression
+          (identifier)
+          (binary_expression
+            (string
+              (dashboard_token)
+              (string_content))
+            (identifier)))))))
+
+==================
+generating command
+==================
+
+| tstats summariesonly=true count FROM datamodel=Authentication.Authentication WHERE Authentication.action=failure BY Authentication.user span=5m
+| rename Authentication.user AS user
+| fields - _raw
+
+---
+
+(source_file
+  (pipeline
+    (pipe_stage
+      (command
+        (command_name)
+        (binary_expression
+          (identifier)
+          (boolean))
+        (identifier)
+        (clause_keyword)
+        (binary_expression
+          (identifier)
+          (identifier))
+        (clause_keyword)
+        (binary_expression
+          (identifier)
+          (identifier))
+        (clause_keyword)
+        (identifier)
+        (keyword_assignment
+          (clause_keyword)
+          (relative_time))))
+    (pipe_stage
+      (command
+        (command_name)
+        (identifier)
+        (clause_keyword)
+        (identifier)))
+    (pipe_stage
+      (command
+        (command_name)
+        (unary_expression
+          (identifier))))))
+
+==================
+comments and tokens
+==================
+
+``` A multiline
+SPL comment. ```
+index=main host=$host$ field IN ("a", "b", "c")
+| foreach value* [ eval <<FIELD>>=lower(<<FIELD>>) ]
+
+---
+
+(source_file
+  (comment)
+  (pipeline
+    (search_stage
+      (binary_expression
+        (identifier)
+        (identifier))
+      (binary_expression
+        (identifier)
+        (dashboard_token))
+      (binary_expression
+        (identifier)
+        (operator)
+        (tuple
+          (string
+            (string_content))
+          (string
+            (string_content))
+          (string
+            (string_content)))))
+    (pipe_stage
+      (command
+        (command_name)
+        (wildcard_pattern)
+        (subsearch
+          (pipeline
+            (search_stage
+              (identifier)
+              (binary_expression
+                (template_token)
+                (function_call
+                  (identifier)
+                  (template_token))))))))))
